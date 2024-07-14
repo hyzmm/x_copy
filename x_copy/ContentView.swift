@@ -5,70 +5,70 @@
 //  Created by WengXiang on 2024/7/11.
 //
 
-import SwiftUI
-import SwiftData
 import Combine
+import SwiftData
+import SwiftUI
 
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var items: [Item]
     @State private var clipboardPublisher: AnyCancellable?
+    @State private var changeCount = 0
 
     var body: some View {
-        NavigationSplitView {
-            List {
-                ForEach(items) { item in
-                    NavigationLink {
-                        Text("Itessm at \(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))")
-                    } label: {
-                        Text(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))
-                    }
-                }
-                .onDelete(perform: deleteItems)
+        List {
+            ForEach(items) { item in
+                ListItem(item: item)
             }
-            .navigationSplitViewColumnWidth(min: 180, ideal: 200)
-            .toolbar {
-                ToolbarItem {
-                    Button(action: addItem) {
-                        Label("Add Item", systemImage: "plus")
-                    }
-                }
-            }
-        } detail: {
-            Text("Select an item")
-        }.onAppear  {
-            startListeningToClipboard();
+            .onDelete(perform: deleteItems)
+            .listRowBackground(Color.clear)
         }
-    }
-    
-     func startListeningToClipboard() {
-        clipboardPublisher = Timer.publish(every: 1.0, on: .main, in: .common)
-            .autoconnect()
-            .sink {
-            _ in
-            if let str = NSPasteboard.general.string(forType: .string){
-                print("Clipboard: \(str)")
-            }
+        .scrollContentBackground(.hidden)
+        .onAppear {
+            startListeningToClipboard()
         }
+        .background(VisualEffectView())
     }
 
-    private func addItem() {
-        withAnimation {
-            let newItem = Item(timestamp: Date())
-            modelContext.insert(newItem)
-        }
+    func startListeningToClipboard() {
+        changeCount = NSPasteboard.general.changeCount
+        clipboardPublisher = Timer.publish(every: 1.0, on: .main, in: .common)
+            .autoconnect()
+            .sink { _ in
+                let newChangeCount = NSPasteboard.general.changeCount
+                if newChangeCount != changeCount {
+                    if let str = NSPasteboard.general.string(forType: .string) {
+                        addItem(str: str)
+                    }
+                    changeCount = newChangeCount
+                }
+            }
+    }
+
+    private func addItem(str: String) {
+        let newItem = Item(str)
+        modelContext.insert(newItem)
     }
 
     private func deleteItems(offsets: IndexSet) {
-        withAnimation {
-            for index in offsets {
-                modelContext.delete(items[index])
-            }
+        for index in offsets {
+            modelContext.delete(items[index])
         }
     }
 }
 
 #Preview {
-    ContentView()
-        .modelContainer(for: Item.self, inMemory: true)
+    let config = ModelConfiguration(isStoredInMemoryOnly: true)
+    let container = try! ModelContainer(for: Item.self, configurations: config)
+
+    container.mainContext.insert(Item("Hello World!"))
+    container.mainContext.insert(
+        Item(
+            // swiftlint:disable:next line_length
+            "Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit"
+        ))
+
+    return ContentView()
+        .modelContainer(container)
+        .frame(width: 200, height: 300)
 }
