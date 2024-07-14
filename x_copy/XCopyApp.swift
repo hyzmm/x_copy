@@ -10,36 +10,26 @@ import SwiftUI
 
 @main
 struct XCopyApp: App {
-    @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
-
-    var sharedModelContainer: ModelContainer = {
-        let schema = Schema([
-            Item.self
-        ])
-        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
-
-        do {
-            return try ModelContainer(for: schema, configurations: [modelConfiguration])
-        } catch {
-            fatalError("Could not create ModelContainer: \(error)")
-        }
-    }()
+    @State var statusBarController: StatusBarController?
+    @StateObject var dataModel: DataModel = .init()
+    @StateObject var copyNotification: CopyNotification = .init()
 
     var body: some Scene {
         WindowGroup {
             ContentView().frame(width: 200, height: 300)
-        }
-        .modelContainer(sharedModelContainer)
-    }
-}
+                .onAppear {
+                    print("appear")
+                    if let window = NSApplication.shared.windows.first {
+                        window.titlebarAppearsTransparent = true
+                        window.backgroundColor = .clear
+                        window.isOpaque = false
+                        window.styleMask = [.borderless, .resizable, .miniaturizable]
+                    }
+                    statusBarController = StatusBarController(dataModel: dataModel, copyNotification: copyNotification)
+                }
+                .environment(dataModel)
+                .environmentObject(copyNotification)
 
-class AppDelegate: NSObject, NSApplicationDelegate {
-    func applicationDidFinishLaunching(_ notification: Notification) {
-        if let window = NSApplication.shared.windows.first {
-            window.titlebarAppearsTransparent = true
-            window.backgroundColor = .clear
-            window.isOpaque = false
-            window.styleMask = [.borderless, .resizable, .miniaturizable]
         }
     }
 }

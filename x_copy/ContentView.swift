@@ -10,14 +10,14 @@ import SwiftData
 import SwiftUI
 
 struct ContentView: View {
-    @Environment(\.modelContext) private var modelContext
-    @Query private var items: [Item]
+    @Environment(\.dataModel) private var dataModel
+    @EnvironmentObject private var copyNotification: CopyNotification
     @State private var clipboardPublisher: AnyCancellable?
     @State private var changeCount = 0
 
     var body: some View {
         List {
-            ForEach(items) { item in
+            ForEach(dataModel.records.reversed()) { item in
                 ListItem(item: item)
             }
             .onDelete(perform: deleteItems)
@@ -38,7 +38,10 @@ struct ContentView: View {
                 let newChangeCount = NSPasteboard.general.changeCount
                 if newChangeCount != changeCount {
                     if let str = NSPasteboard.general.string(forType: .string) {
-                        addItem(str: str)
+                        // Copy behavior will trigger this code, we need this check to avoid redundant calls.
+                        if str != copyNotification.lastCopy && str != dataModel.records.last?.stringContent {
+                            addItem(str: str)
+                        }
                     }
                     changeCount = newChangeCount
                 }
@@ -46,29 +49,22 @@ struct ContentView: View {
     }
 
     private func addItem(str: String) {
-        let newItem = Item(str)
-        modelContext.insert(newItem)
+        dataModel.addRecord(content: str)
     }
 
     private func deleteItems(offsets: IndexSet) {
         for index in offsets {
-            modelContext.delete(items[index])
+            dataModel.deleteRecord(index)
         }
     }
 }
 
 #Preview {
-    let config = ModelConfiguration(isStoredInMemoryOnly: true)
-    let container = try! ModelContainer(for: Item.self, configurations: config)
-
-    container.mainContext.insert(Item("Hello World!"))
-    container.mainContext.insert(
-        Item(
-            // swiftlint:disable:next line_length
-            "Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit"
-        ))
-
+    let dataModel = DataModel()
+    dataModel.addRecord(content: "Hello World!")
+    dataModel.addRecord(content: // swiftlint:disable:next line_length
+        "Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit")
     return ContentView()
-        .modelContainer(container)
+        .environment(dataModel)
         .frame(width: 200, height: 300)
 }
