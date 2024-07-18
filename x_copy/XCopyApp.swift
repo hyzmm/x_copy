@@ -11,8 +11,7 @@ import SwiftUI
 @main
 struct XCopyApp: App {
     @State var statusBarController: StatusBarController?
-    @StateObject var dataModel: DataModel = .init()
-    @StateObject var copyNotification: CopyNotification = .init()
+    @State var dataModel: DataModel = .init()
 
     var body: some Scene {
         WindowGroup {
@@ -25,11 +24,9 @@ struct XCopyApp: App {
                         window.isOpaque = false
                         window.styleMask = [.borderless, .resizable, .miniaturizable]
                     }
-                    statusBarController = StatusBarController(dataModel: dataModel, copyNotification: copyNotification)
+                    statusBarController = StatusBarController(dataModel: dataModel)
                 }
                 .environment(dataModel)
-                .environmentObject(copyNotification)
-
         }
     }
 }

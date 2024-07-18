@@ -18,8 +18,20 @@ import SwiftUI
     }
 }
 
-@Observable class DataModel: ObservableObject {
+@Observable class DataModel {
     var records: [Item] = []
+
+    @ObservationIgnored var isAppInitiatedCopy: Bool = false
+    @ObservationIgnored var changeCount: Int = 0
+
+    func copy(_ content: String) {
+        isAppInitiatedCopy = true
+        let pasteboard = NSPasteboard.general
+        pasteboard.clearContents()
+        pasteboard.setData(content.data(using: .utf8), forType: .string)
+
+        NotificationCenter.default.post(name: .CloseStatusBarPopup, object: nil)
+    }
 
     func addRecord(content: String) {
         records.append(Item(stringContent: content, date: Date()))
@@ -28,8 +40,8 @@ import SwiftUI
         }
     }
 
-    func deleteRecord(_ at: Int) {
-        records.remove(at: at)
+    func deleteRecord(_ index: Int) {
+        records.remove(at: index)
     }
 }
 

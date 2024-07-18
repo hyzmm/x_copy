@@ -14,11 +14,11 @@
 		F056531F2C4031B9007BE832 /* x_copyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F056531E2C4031B9007BE832 /* x_copyTests.swift */; };
 		F05653292C4031B9007BE832 /* x_copyUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F05653282C4031B9007BE832 /* x_copyUITests.swift */; };
 		F056532B2C4031B9007BE832 /* x_copyUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F056532A2C4031B9007BE832 /* x_copyUITestsLaunchTests.swift */; };
+		F0578D2F2C49850700098362 /* Notification.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0578D2E2C49850700098362 /* Notification.swift */; };
 		F091C90F2C43721200B689EC /* VisualEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = F091C90E2C43721200B689EC /* VisualEffect.swift */; };
 		F091C9112C43823500B689EC /* ListItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = F091C9102C43823500B689EC /* ListItem.swift */; };
 		F091C9132C438FD600B689EC /* StatusBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F091C9122C438FD600B689EC /* StatusBarController.swift */; };
 		F091C9152C43FD9800B689EC /* DataModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F091C9142C43FD9800B689EC /* DataModel.swift */; };
-		F091C9172C440E1B00B689EC /* CopyNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = F091C9162C440E1B00B689EC /* CopyNotification.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -50,11 +50,11 @@
 		F05653242C4031B9007BE832 /* x_copyUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = x_copyUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		F05653282C4031B9007BE832 /* x_copyUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = x_copyUITests.swift; sourceTree = "<group>"; };
 		F056532A2C4031B9007BE832 /* x_copyUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = x_copyUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		F0578D2E2C49850700098362 /* Notification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Notification.swift; sourceTree = "<group>"; };
 		F091C90E2C43721200B689EC /* VisualEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisualEffect.swift; sourceTree = "<group>"; };
 		F091C9102C43823500B689EC /* ListItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListItem.swift; sourceTree = "<group>"; };
 		F091C9122C438FD600B689EC /* StatusBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusBarController.swift; sourceTree = "<group>"; };
 		F091C9142C43FD9800B689EC /* DataModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataModel.swift; sourceTree = "<group>"; };
-		F091C9162C440E1B00B689EC /* CopyNotification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CopyNotification.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -114,7 +114,7 @@
 				F091C9102C43823500B689EC /* ListItem.swift */,
 				F091C9122C438FD600B689EC /* StatusBarController.swift */,
 				F091C9142C43FD9800B689EC /* DataModel.swift */,
-				F091C9162C440E1B00B689EC /* CopyNotification.swift */,
+				F0578D2E2C49850700098362 /* Notification.swift */,
 			);
 			path = x_copy;
 			sourceTree = "<group>";
@@ -278,10 +278,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F091C9172C440E1B00B689EC /* CopyNotification.swift in Sources */,
 				F091C9152C43FD9800B689EC /* DataModel.swift in Sources */,
 				F091C9112C43823500B689EC /* ListItem.swift in Sources */,
 				F091C9132C438FD600B689EC /* StatusBarController.swift in Sources */,
+				F0578D2F2C49850700098362 /* Notification.swift in Sources */,
 				F056530D2C4031B8007BE832 /* ContentView.swift in Sources */,
 				F091C90F2C43721200B689EC /* VisualEffect.swift in Sources */,
 				F056530B2C4031B8007BE832 /* XCopyApp.swift in Sources */,

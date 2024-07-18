@@ -8,13 +8,11 @@ class StatusBarController: NSObject {
     private var popover: NSPopover?
 
     private var dataModel: DataModel
-    private var copyNotification: CopyNotification
 
     private var cancellable: AnyCancellable?
 
-    init(dataModel: DataModel, copyNotification: CopyNotification) {
+    init(dataModel: DataModel) {
         self.dataModel = dataModel
-        self.copyNotification = copyNotification
         super.init()
 
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
@@ -24,14 +22,14 @@ class StatusBarController: NSObject {
             button.target = self
         }
 
-        cancellable = copyNotification.objectWillChange.sink { _ in
+        cancellable = NotificationCenter.default.publisher(for: .CloseStatusBarPopup).sink { _ in
             self.popover?.close()
         }
 
         popover = NSPopover()
         popover?.contentSize = NSSize(width: 200, height: 300)
         popover?.behavior = .transient
-        popover?.contentViewController = NSHostingController(rootView: ContentView().environment(dataModel).environmentObject(copyNotification))
+        popover?.contentViewController = NSHostingController(rootView: ContentView().environment(dataModel))
     }
 
     @objc func togglePopover() {

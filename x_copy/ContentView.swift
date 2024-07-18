@@ -11,14 +11,13 @@ import SwiftUI
 
 struct ContentView: View {
     @Environment(\.dataModel) private var dataModel
-    @EnvironmentObject private var copyNotification: CopyNotification
     @State private var clipboardPublisher: AnyCancellable?
-    @State private var changeCount = 0
+    @FocusState private var focued: Bool
 
     var body: some View {
         List {
-            ForEach(dataModel.records.reversed()) { item in
-                ListItem(item: item)
+            ForEach(Array(dataModel.records.reversed().enumerated()), id: \.offset) { index, item in
+                ListItem(item: item, index: index)
             }
             .onDelete(perform: deleteItems)
             .listRowBackground(Color.clear)
@@ -28,22 +27,45 @@ struct ContentView: View {
             startListeningToClipboard()
         }
         .background(VisualEffectView())
+        .focusable()
+        .focused($focued)
+        .onKeyPress(keys: ["1", "2", "3", "4", "5", "6", "7", "8", "9"]) { press in
+            let index = dataModel.records.count - Int(press.characters)!
+            copy(index)
+            return .handled
+        }
+        .onAppear {
+            focued = true
+        }
+    }
+
+    func copy(_ index: Int) {
+        guard index < dataModel.records.count else {
+            return
+        }
+        let item = dataModel.records[index]
+        dataModel.copy(item.stringContent)
     }
 
     func startListeningToClipboard() {
-        changeCount = NSPasteboard.general.changeCount
-        clipboardPublisher = Timer.publish(every: 1.0, on: .main, in: .common)
+        dataModel.changeCount = NSPasteboard.general.changeCount
+
+        clipboardPublisher = Timer.publish(every: 0.016, on: .main, in: .common)
             .autoconnect()
             .sink { _ in
                 let newChangeCount = NSPasteboard.general.changeCount
-                if newChangeCount != changeCount {
-                    if let str = NSPasteboard.general.string(forType: .string) {
-                        // Copy behavior will trigger this code, we need this check to avoid redundant calls.
-                        if str != copyNotification.lastCopy && str != dataModel.records.last?.stringContent {
-                            addItem(str: str)
+                if newChangeCount != dataModel.changeCount {
+                    if dataModel.isAppInitiatedCopy {
+                        dataModel.isAppInitiatedCopy = false
+                    } else {
+                        if let str = NSPasteboard.general.string(forType: .string) {
+                            // Copy behavior will trigger this code, we need this check to avoid redundant calls.
+                            if str != dataModel.records.last?.stringContent {
+                                addItem(str: str)
+                            }
                         }
                     }
-                    changeCount = newChangeCount
+                    dataModel.changeCount = newChangeCount
                 }
             }
     }
@@ -62,7 +84,8 @@ struct ContentView: View {
 #Preview {
     let dataModel = DataModel()
     dataModel.addRecord(content: "Hello World!")
-    dataModel.addRecord(content: // swiftlint:disable:next line_length
+    dataModel.addRecord(content:
+        // swiftlint:disable:next line_length
         "Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit")
     return ContentView()
         .environment(dataModel)
