@@ -20,7 +20,7 @@ import SwiftUI
 
 @Observable class DataModel {
     var records: [Item] = []
-    var selectionIndex: Int?
+    var selectionIndex: Int = -1
 
     @ObservationIgnored var isAppInitiatedCopy: Bool = false
     @ObservationIgnored var changeCount: Int = 0
@@ -31,11 +31,7 @@ import SwiftUI
         pasteboard.clearContents()
         pasteboard.setData(records[index].stringContent.data(using: .utf8), forType: .string)
 
-        selectionIndex = index
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
             NotificationCenter.default.post(name: .CloseStatusBarPopup, object: nil)
-            self.selectionIndex = nil
-        }
     }
 
     func addRecord(content: String) {

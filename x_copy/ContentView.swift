@@ -15,12 +15,20 @@ struct ContentView: View {
     @FocusState private var focued: Bool
 
     var body: some View {
-        List {
+        let selection: Binding<Int> = Binding(get: { dataModel.selectionIndex }, set: { value in self.dataModel.selectionIndex = value })
+
+        List(selection: selection) {
             ForEach(Array(dataModel.records.reversed().enumerated()), id: \.offset) { index, item in
                 ListItem(item: item, index: index)
+                    .onHover(perform: { hovering in
+                        withAnimation {
+                            if hovering {
+                                dataModel.selectionIndex = index
+                            }
+                        }
+                    })
             }
             .onDelete(perform: deleteItems)
-            .listRowBackground(Color.clear)
         }
         .scrollContentBackground(.hidden)
         .onAppear {
@@ -43,8 +51,7 @@ struct ContentView: View {
         guard index < dataModel.records.count else {
             return
         }
-        let item = dataModel.records[index]
-        dataModel.copy(item.stringContent)
+        dataModel.copy(index)
     }
 
     func startListeningToClipboard() {

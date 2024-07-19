@@ -11,7 +11,6 @@ import SwiftUI
 struct ListItem: View {
     var item: Item
     var index: Int
-    @State var hover: Bool = false
     @Environment(\.dataModel) private var dataModel
 
     var body: some View {
@@ -19,7 +18,6 @@ struct ListItem: View {
             Text(item.stringContent.trimmingCharacters(in: .whitespacesAndNewlines))
                 .lineLimit(1)
                 .font(.system(size: 14))
-                .scaleEffect(hover ? 1 : 0.9, anchor: .leading)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
             if index < 9 {
@@ -34,13 +32,8 @@ struct ListItem: View {
             }
         }
         .onTapGesture {
-            dataModel.copy(item.stringContent)
+            dataModel.copy(index)
         }
-        .onHover(perform: { hovering in
-            withAnimation {
-                hover = hovering
-            }
-        })
     }
 }
 
