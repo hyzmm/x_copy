@@ -20,17 +20,22 @@ import SwiftUI
 
 @Observable class DataModel {
     var records: [Item] = []
+    var selectionIndex: Int?
 
     @ObservationIgnored var isAppInitiatedCopy: Bool = false
     @ObservationIgnored var changeCount: Int = 0
 
-    func copy(_ content: String) {
+    func copy(_ index: Int) {
         isAppInitiatedCopy = true
         let pasteboard = NSPasteboard.general
         pasteboard.clearContents()
-        pasteboard.setData(content.data(using: .utf8), forType: .string)
+        pasteboard.setData(records[index].stringContent.data(using: .utf8), forType: .string)
 
-        NotificationCenter.default.post(name: .CloseStatusBarPopup, object: nil)
+        selectionIndex = index
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            NotificationCenter.default.post(name: .CloseStatusBarPopup, object: nil)
+            self.selectionIndex = nil
+        }
     }
 
     func addRecord(content: String) {
